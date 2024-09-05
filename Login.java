@@ -1,34 +1,36 @@
 import java.util.Scanner;
 
+/**
+* Esta clase contiene el login para roles de usuario del sistema de gestion de inventarios
+* @author Hilda Aileen Raymundo Diaz
+* @since 04/09/2024
+**/
+
 public class Login{
 
 	public static void main(String[] args){
 	
 		//Acá se declaran los identificadores para el sistema
 		Scanner scan = new Scanner(System.in);
-		String usuario;
-		String contrasenia;
+		String usuario = "";
+		String contrasenia = "";
 
-		//Acá se lee el usuario y contraseña
 		System.out.println("SISTEMA DE GESTION DE INVENTARIOS");
 
-		do{
+		//Acá se lee el usuario y contraseña
+		while(usuario == "" || contrasenia == ""){
 			System.out.println(" Ingrese su nombre de usuario: ");
 			usuario = scan.nextLine();
-		}while(usuario == "");
-
-		do{
 			System.out.println(" Ingrese su contraseña: ");
 			contrasenia = scan.nextLine();
-		}while(contrasenia == "");
 
-		System.out.println(usuario + contrasenia);
-
-		if (usuario == "Hilda") {
-			System.out.println("Bienvenido al sistema");
-		}
-		else if (usuario != "Hilda") {
-			System.out.println("Usuario o contraseña incorrectas");
+			if (usuario.equals("Hilda") && contrasenia.equals("Hilda")) {
+				System.out.println("Bienvenido al sistema");
+			}
+			else {
+				System.out.println("Usuario o contraseña incorrecta :C");
+			}
+			
 		}
 	}
 }
