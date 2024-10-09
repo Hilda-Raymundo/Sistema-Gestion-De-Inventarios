@@ -1,0 +1,3 @@
+Hilda|1234|Admin
+Lirio|5678|Encargado
+Eliezer|9123|Vendedor
