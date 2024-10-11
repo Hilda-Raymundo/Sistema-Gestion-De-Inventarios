@@ -3,3 +3,4 @@ dispositivos|moviles
 prueba|prueba
 pruebados|pruebados
 pop|pop
+ropa>hombre>pantalon|ropadehombre

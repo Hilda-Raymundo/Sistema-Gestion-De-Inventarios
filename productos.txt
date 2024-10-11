@@ -1,0 +1,3 @@
+Kalvin|ropa|caracteristicas(pop:rojo,verde;tamanio:peque;)|especificaciones(medida:centimetros;altura:metros;)
+20241010-154805|a|a|caracteristicas(no:no;)|especificaciones(no:no;)||0.0|0
+20241010-154957|kalvin|a|caracteristicas(no:no;)|especificaciones(no:no;)||0.0|0
