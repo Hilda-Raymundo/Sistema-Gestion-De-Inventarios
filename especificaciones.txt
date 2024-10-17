@@ -1,3 +1,7 @@
-hilda|hilda|hilda
-Eliezer|9123|Vendedor
-pp|pp|pp
+2|Eliezer|9123|Vendedor
+4|ejemplo||ejemplo
+5|ejemplo2|no|no
+6|ejemplo3|no|no
+7|ejemplo4|no|no
+8|ejemplo5||ejemplo5
+9|ejemplo6|ejemplo6|ejemplo6

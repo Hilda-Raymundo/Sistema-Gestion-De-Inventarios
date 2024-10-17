@@ -1,5 +1,5 @@
-1|pepo|pepo
-2|Servicios>personales|
-3|Bienes>consumo|
-4|bienes>durables|
-5|pepos|
+1|color|colores
+3|altura|
+4|anchura|
+6|pies|
+7|alto>altos|alturas
