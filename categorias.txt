@@ -1,6 +1,5 @@
-equipitos|equipos
-dispositivos|moviles
-prueba|prueba
-pruebados|pruebados
-pop|pop
-ropa>hombre>pantalon|ropadehombre
+1|pepo|pepo
+2|Servicios>personales|
+3|Bienes>consumo|
+4|bienes>durables|
+5|pepos|

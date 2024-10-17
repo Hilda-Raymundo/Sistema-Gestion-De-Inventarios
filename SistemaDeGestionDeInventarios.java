@@ -11,10 +11,10 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import static java.lang.Integer.parseInt;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.lang.String;
 import java.nio.file.Files;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import java.text.SimpleDateFormat;
@@ -87,7 +87,10 @@ public class SistemaDeGestionDeInventarios {
                 String[] datos = linea.split("\\|");
 
                 if (datos[0].compareTo(nombreCategoria) == 0) {
-                    if (datos[0].compareTo(nuevoNombre) != 0) {
+                    if (nombreArchivo.equals("productos.txt")) {
+                        linea = (datos[0] + "|" + nuevoNombre);
+                        System.out.println("modificacion exitosa");
+                    } else if (datos[0].compareTo(nuevoNombre) != 0) {
                         if (!descCategoria.equals("")) {
                             if (nombreArchivo.equals("especificaciones.txt")) {
                                 linea = (nuevoNombre + "|" + descCategoria + "|" + tipoDato);
@@ -105,6 +108,7 @@ public class SistemaDeGestionDeInventarios {
 
                 bw.write(linea + "\n");
             }
+
             bw.close();
             br.close();
 
@@ -152,6 +156,7 @@ public class SistemaDeGestionDeInventarios {
             if (!existe.equals("siExiste")) {
                 System.out.println("El producto no esta registrado");
             }
+            fr.close();
             br.close();
         } catch (FileNotFoundException ex) {
             Logger.getLogger(SistemaDeGestionDeInventarios.class.getName()).log(Level.SEVERE, null, ex);
@@ -165,6 +170,8 @@ public class SistemaDeGestionDeInventarios {
         File f = new File("src\\sistema\\de\\gestion\\de\\inventarios\\" + nombreArchivo);
         String existe = "";
         int contador = 0;
+        int numeracion = 0;
+        String numero = "";
 
         if (nombreArchivo.equals("categorias.txt") || nombreArchivo.equals("caracteristicas.txt") || nombreArchivo.equals("especificaciones.txt") || nombreArchivo.equals("entradas.txt") || nombreArchivo.equals("salidas.txt")) {
             try {
@@ -175,15 +182,23 @@ public class SistemaDeGestionDeInventarios {
 
                 while ((leerLineas = br.readLine()) != null) {
                     String[] datos = leerLineas.split("\\|");
-                    String[] datos2 = leerLineas.split("\\>");
-                    if (datos[0].compareTo(nombre) == 0 || datos2[0].compareTo(nombre) == 0) {
+                    if (datos[1].compareTo(nombre) == 0) {
                         if (nombreArchivo.equals("entradas.txt") || nombreArchivo.equals("salidas.txt")) {
 
                         } else {
                             existe = "yaExiste";
                         }
                     }
+                    if (nombreArchivo.equals("cateogrias.txt")) {
+                        String[] subdatos = datos[0].split("\\>");
+                        if (subdatos[0].compareTo(nombre) == 0) {
+                            existe = "yaExiste";
+                        }
+                    }
+                    numero = datos[0];
                 }
+
+                numeracion = parseInt(numero) + 1;
 
                 if (existe.equals("yaExiste")) {
                     System.out.println("El nombre ya se encuentra registrado");
@@ -199,7 +214,7 @@ public class SistemaDeGestionDeInventarios {
 
                             bw.write(nombre + "|" + descripcion + "|" + fechaParaCodigo + "\n");
                         } else {
-                            bw.write(nombre + "|" + descripcion + "\n");
+                            bw.write(numeracion + "|" + nombre + "|" + descripcion + "\n");
                         }
                         bw.close();
                         System.out.println("Registro exitoso");
@@ -330,6 +345,7 @@ public class SistemaDeGestionDeInventarios {
                 if (existe.equals("yaExiste")) {
                     System.out.println("El nombre ya se encuentra registrado");
                 } else {
+
                     System.out.println("Ingresar descripcion? si/no");
                     aniadirDescripcion = scan.next();
 
@@ -359,6 +375,10 @@ public class SistemaDeGestionDeInventarios {
                 br3.close();
                 br2.close();
                 br.close();
+                fr.close();
+                fr2.close();
+                fr3.close();
+                frProductos.close();
 
             } catch (IOException ex) {
                 Logger.getLogger(SistemaDeGestionDeInventarios.class
@@ -385,14 +405,14 @@ public class SistemaDeGestionDeInventarios {
                 System.out.println("Registro exitoso");
 
             }
-
+            fw.close();
         } catch (IOException ex) {
             Logger.getLogger(SistemaDeGestionDeInventarios.class
                     .getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    public void leerArchivos(String nombreArchivo, String nombreUsuario, String contrasenia) {
+    public void leerArchivos(String nombreArchivo, String nombre, String contrasenia) {
         SistemaDeGestionDeInventarios operaciones = new SistemaDeGestionDeInventarios();
         File f = new File("src\\sistema\\de\\gestion\\de\\inventarios\\" + nombreArchivo);
 
@@ -405,7 +425,7 @@ public class SistemaDeGestionDeInventarios {
 
                     while ((linea = br.readLine()) != null) {
                         String[] datos = linea.split("\\|");
-                        if (datos[0].equals(nombreUsuario) && datos[1].equals(contrasenia)) {
+                        if (datos[0].equals(nombre) && datos[1].equals(contrasenia)) {
                             if (datos[2].equals("Admin")) {
                                 operaciones.menuAdmin();
                             }
@@ -436,8 +456,8 @@ public class SistemaDeGestionDeInventarios {
 
                 while ((leerLinea = br.readLine()) != null) {
                     System.out.println(leerLinea);
-
                 }
+
                 br.close();
 
             } catch (FileNotFoundException ex) {
@@ -448,7 +468,46 @@ public class SistemaDeGestionDeInventarios {
                 Logger.getLogger(SistemaDeGestionDeInventarios.class
                         .getName()).log(Level.SEVERE, null, ex);
             }
+        }
 
+    }
+
+    public void historial(String codigoProducto) {
+        File fEntradas = new File("src\\sistema\\de\\gestion\\de\\inventarios\\entradas.txt");
+        File fSalidas = new File("src\\sistema\\de\\gestion\\de\\inventarios\\salidas.txt");
+
+        try {
+            FileReader frEntradas = new FileReader(fEntradas);
+            BufferedReader brEntradas = new BufferedReader(frEntradas);
+
+            String linea = "";
+            System.out.println("LAS ENTRADAS DEL PRODUCTO REGISTRADAS SON: ");
+            while ((linea = brEntradas.readLine()) != null) {
+                String[] datos = linea.split("\\|");
+                if (datos[0].equals(codigoProducto)) {
+                    System.out.println(linea);
+                }
+            }
+
+            FileReader frSalidas = new FileReader(fSalidas);
+            BufferedReader brSalidas = new BufferedReader(frSalidas);
+            linea = "";
+            System.out.println("LAS SALIDAS DEL PRODUCTO REGISTRADAS SON: ");
+            while ((linea = brSalidas.readLine()) != null) {
+                String[] datos = linea.split("\\|");
+                if (datos[0].equals(codigoProducto)) {
+                    System.out.println(linea);
+                }
+            }
+
+            frEntradas.close();
+            brEntradas.close();
+            frSalidas.close();
+            brSalidas.close();
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(SistemaDeGestionDeInventarios.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(SistemaDeGestionDeInventarios.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }
@@ -550,10 +609,14 @@ public class SistemaDeGestionDeInventarios {
                             String subcategoria = scan.next();
                             nombreCategoria = nombreCategoria + ">" + subcategoria;
                         } while (aniadir.equals("si"));
-                        System.out.println(nombreCategoria);
                     }
+                    System.out.println("Quiere ingresar una descripcion? si/no");
+                    String aniadirDescripcion = scan.next();
+                    
+                    if(aniadirDescripcion.equals("si")){
                     System.out.println("Descripción: ");
                     descCategoria = scan.next();
+                    }
                     operaciones.llenarArchivos(nombreArchivo, nombreCategoria, descCategoria, tipoDato);
                     nombreCategoria = "";
                     break;
@@ -651,8 +714,135 @@ public class SistemaDeGestionDeInventarios {
                         nombreArchivo = "productos.txt";
                         System.out.println("Estos son los productos existentes: \n");
                         operaciones.leerArchivos(nombreArchivo, "", "");
+                        System.out.println("\n Ingrese el codigo del producto a modificar: ");
+                        String codigo = scan.next();
+                        System.out.println("\n Ingrese el nuevo nombre: ");
+                        String nuevoNombre = scan.next();
+                        String linea = "";
+                        String categoria = "";
+                        String caracteristicas = "";
+                        String especificaciones = "";
+                        String aniadirDescripcion = "";
+                        String descripcionProducto = "";
+                        String aniadirPrecio = "";
+                        float precioProducto = 0.0f;
+                        String aniadirCantStock = "";
+                        int cantStock = 0;
 
+                        try {
+                            FileReader fr = new FileReader("src\\sistema\\de\\gestion\\de\\inventarios\\categorias.txt");
+                            BufferedReader br = new BufferedReader(fr);
+
+                            System.out.println("\n        ELIJA LA CATEGORIA");
+                            while ((linea = br.readLine()) != null) {
+                                System.out.println(linea);
+                            }
+                            System.out.println("escriba la categoria a seleccionar: ");
+                            categoria = scan.next();
+
+                            FileReader fr2 = new FileReader("src\\sistema\\de\\gestion\\de\\inventarios\\caracteristicas.txt");
+                            BufferedReader br2 = new BufferedReader(fr2);
+
+                            String aniadirOtraCaracteristica = "";
+                            while (!aniadirOtraCaracteristica.equals("no")) {
+                                System.out.println("\n        ELIJA LAS CARACTERISTICAS");
+                                while ((linea = br2.readLine()) != null) {
+                                    System.out.println(linea);
+                                }
+                                linea = "";
+                                System.out.println("escriba la caracteristica a seleccionar: ");
+                                String valorCaracteristica = scan.next();
+
+                                String otroValor = "";
+                                String nuevoValor = "";
+                                String valoresCaracteristicas = "";
+                                while (!otroValor.equals("no")) {
+                                    System.out.println("Ingrese el valor para la característica seleccionada: ");
+                                    nuevoValor = scan.next();
+                                    if (valoresCaracteristicas.equals("")) {
+                                        valoresCaracteristicas = nuevoValor;
+                                    } else {
+                                        valoresCaracteristicas = valoresCaracteristicas + "," + nuevoValor;
+                                    }
+                                    System.out.println("Agregar otro valor? si/no");
+                                    otroValor = scan.next();
+                                }
+
+                                caracteristicas = caracteristicas + valorCaracteristica + ":" + valoresCaracteristicas + ";";
+                                valoresCaracteristicas = "";
+
+                                System.out.println("Seleccionar otra caracteristica? si/no");
+                                aniadirOtraCaracteristica = scan.next();
+
+                            }
+                            FileReader fr3 = new FileReader("src\\sistema\\de\\gestion\\de\\inventarios\\especificaciones.txt");
+                            BufferedReader br3 = new BufferedReader(fr3);
+
+                            String aniadirOtraEspecificacion = "";
+                            while (!aniadirOtraEspecificacion.equals("no")) {
+                                System.out.println("\n        ELIJA LAS ESPECIFICACIONES");
+                                while ((linea = br3.readLine()) != null) {
+                                    System.out.println(linea);
+                                }
+                                linea = "";
+                                System.out.println("escriba la especificacion a seleccionar: ");
+                                String valorEspecificacion = scan.next();
+
+                                String otroValor = "";
+                                String nuevoValor = "";
+                                String valoresEspecificaciones = "";
+                                while (!otroValor.equals("no")) {
+                                    System.out.println("Ingrese el valor para la especificacion seleccionada: ");
+                                    nuevoValor = scan.next();
+                                    if (valoresEspecificaciones.equals("")) {
+                                        valoresEspecificaciones = nuevoValor;
+                                    } else {
+                                        valoresEspecificaciones = valoresEspecificaciones + "," + nuevoValor;
+                                    }
+                                    System.out.println("Agregar otro valor? si/no");
+                                    otroValor = scan.next();
+                                }
+
+                                especificaciones = especificaciones + valorEspecificacion + ":" + valoresEspecificaciones + ";";
+                                valoresEspecificaciones = "";
+
+                                System.out.println("Seleccionar otra especificacion? si/no");
+                                aniadirOtraEspecificacion = scan.next();
+                            }
+
+                            System.out.println("Ingresar descripcion? si/no");
+                            aniadirDescripcion = scan.next();
+
+                            if (aniadirDescripcion.equals("si")) {
+                                System.out.println("Ingrese la descripcion: ");
+                                descripcionProducto = scan.next();
+                            }
+
+                            System.out.println("Ingresar precio de venta? si/no");
+                            aniadirPrecio = scan.next();
+                            if (aniadirPrecio.equals("si")) {
+                                System.out.println("Ingrese el precio: ");
+                                precioProducto = scan.nextFloat();
+                            }
+
+                            System.out.println("Ingresar cantidad inicial? si/no");
+                            aniadirCantStock = scan.next();
+                            if (aniadirCantStock.equals("si")) {
+                                System.out.println("Ingrese la cantidad inicial: ");
+                                cantStock = scan.nextInt();
+                            }
+
+                        } catch (FileNotFoundException ex) {
+                            Logger.getLogger(SistemaDeGestionDeInventarios.class.getName()).log(Level.SEVERE, null, ex);
+                        } catch (IOException ex) {
+                            Logger.getLogger(SistemaDeGestionDeInventarios.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+
+                        String nuevoRegistro = (nuevoNombre + "|" + categoria + "|" + "caracteristicas(" + caracteristicas + ")" + "|" + "especificaciones(" + especificaciones + ")" + "|" + descripcionProducto + "|" + precioProducto + "|" + cantStock);
+
+                        operaciones.modificarArchivos(nombreArchivo, codigo, nuevoRegistro, "", "");
                         break;
+
                     case 6:
                         nombreArchivo = "productos.txt";
                         System.out.println("Estos son los productos existentes: \n");
@@ -699,6 +889,7 @@ public class SistemaDeGestionDeInventarios {
                         operaciones.leerArchivos(nombreArchivo, "", "");
                         System.out.println("\n      Ingrese el codigo del producto para ver su historial: ");
                         String cod = scan.next();
+                        operaciones.historial(cod);
                         break;
                     case 4:
                         break;
