@@ -1,0 +1,5 @@
+1|color|colores
+3|alturas>alto|alturas
+4|anchura|
+6|pies|
+7|altos|alturas
